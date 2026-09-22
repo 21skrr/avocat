@@ -1,0 +1,28 @@
+kind = "web"
+previewPath = "/"
+title = "JBF Avocats"
+description = "A faithful French-language recreation of the JBF Avocats law firm website, focused on criminal defense, family law, urgent 24/7 assistance, callback requests, and clear contact paths."
+version = "1.0.0"
+id = "artifacts/jbf-avocats"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 22594
+
+[services.development]
+run = "pnpm --filter @workspace/jbf-avocats run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/jbf-avocats", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/jbf-avocats/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "22594"
+BASE_PATH = "/"
