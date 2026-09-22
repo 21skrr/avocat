@@ -19,7 +19,9 @@ import {
   UsersRound,
   X,
 } from 'lucide-react';
-import logoPath from '@assets/image_1790078796038.png';
+import headerLogoPath from '@assets/1_1790079767821.png';
+import monogramPath from '@assets/2_1790079767820.png';
+import reversedLogoPath from '@assets/3_1790079767820.png';
 import NotFound from '@/pages/not-found';
 import { Route, Switch, Router as WouterRouter, useLocation } from 'wouter';
 
@@ -57,7 +59,11 @@ const articles = [
 function Logo({ light = false }: { light?: boolean }) {
   return (
     <a href="#accueil" className="jbf-focus flex items-center" data-testid="link-logo">
-      <img src={logoPath} alt="Anass Moumen — Avocat à la Cour" className={`jbf-logo ${light ? 'opacity-95' : ''}`} />
+      <img
+        src={light ? reversedLogoPath : headerLogoPath}
+        alt="Anass Moumen — Avocat à la Cour"
+        className={`jbf-logo ${light ? 'jbf-logo-reversed opacity-95' : ''}`}
+      />
     </a>
   );
 }
@@ -191,7 +197,7 @@ function Home() {
             <p className="mt-7 max-w-xl text-base leading-7 text-[hsl(var(--muted-foreground))]">Le parcours d’Anass Moumen s’est construit au sein de plusieurs environnements professionnels du droit, au contact de problématiques variées et de clients aux besoins concrets.</p>
           </SectionHeading>
           <div className="mt-20 grid gap-8 md:grid-cols-[.7fr_1.3fr]">
-            <div className="flex aspect-[1.05] items-end bg-[hsl(var(--primary))] p-7 text-[hsl(var(--primary-foreground))] sm:p-10"><div><p className="jbf-eyebrow text-[hsl(var(--accent))]">Profil</p><p className="jbf-serif mt-5 text-6xl leading-[.8] sm:text-8xl">AM</p><p className="mt-8 text-sm text-[hsl(var(--primary-foreground)/.7)]">Avocat au Barreau<br />de Casablanca</p></div></div>
+            <div className="flex aspect-[1.05] items-end bg-[hsl(var(--primary))] p-7 text-[hsl(var(--primary-foreground))] sm:p-10"><div><p className="jbf-eyebrow text-[hsl(var(--accent))]">Profil</p><img src={monogramPath} alt="Monogramme AM" className="jbf-monogram mt-5" /><p className="mt-8 text-sm text-[hsl(var(--primary-foreground)/.7)]">Avocat au Barreau<br />de Casablanca</p></div></div>
             <div className="border-t border-[hsl(var(--border))]">
               {[['BRAHMA AVOCATS', 'Expérience professionnelle'], ['BENZEKRI LAW FIRM', 'Expérience professionnelle'], ['Cabinet Maîtres BENAMMAR', 'Expérience professionnelle']].map(([firm, label], index) => <div key={firm} className="group flex items-center justify-between border-b border-[hsl(var(--border))] py-7"><div><p className="jbf-eyebrow text-[hsl(var(--accent))]">{label}</p><h3 className="jbf-serif mt-2 text-3xl sm:text-4xl">{firm}</h3></div><span className="font-mono text-xs text-[hsl(var(--muted-foreground))]">0{index + 1}</span></div>)}
             </div>
@@ -213,7 +219,7 @@ function Home() {
         <section id="contact" className="bg-[hsl(var(--foreground))] py-24 text-[hsl(var(--background))] sm:py-32">
           <div className="jbf-container">
             <div className="grid gap-16 lg:grid-cols-[1.1fr_.9fr] lg:gap-24">
-              <div><p className="jbf-eyebrow text-[hsl(var(--background)/.55)]">Prendre rendez-vous</p><h2 className="jbf-serif mt-6 max-w-xl text-6xl leading-[.88] sm:text-8xl">Commencer par<br /><em className="text-[hsl(var(--accent))]">se parler.</em></h2><p className="mt-8 max-w-md text-base leading-7 text-[hsl(var(--background)/.62)]">Pour une première prise de contact confidentielle, écrivez ou laissez vos coordonnées. Casablanca et échanges à distance, sur rendez-vous.</p><div className="mt-10 flex flex-wrap gap-3"><a href="#contact" className="inline-flex items-center gap-3 border border-[hsl(var(--background)/.3)] px-5 py-4 text-xs font-bold uppercase tracking-[.11em] transition-colors hover:bg-[hsl(var(--background))] hover:text-[hsl(var(--foreground))]" data-testid="link-contact-phone"><MessageCircle className="h-4 w-4" /> Demander un échange</a><a href="https://wa.me/?text=Bonjour%20Ma%C3%AEtre%20Moumen%2C%20je%20souhaite%20un%20premier%20%C3%A9change." target="_blank" rel="noreferrer" className="inline-flex items-center gap-3 bg-[hsl(var(--accent))] px-5 py-4 text-xs font-bold uppercase tracking-[.11em] text-[hsl(var(--accent-foreground))]" data-testid="link-contact-whatsapp"><MessageCircle className="h-4 w-4" /> WhatsApp</a></div></div>
+              <div><img src={reversedLogoPath} alt="" aria-hidden="true" className="jbf-footer-logo mb-9" /><p className="jbf-eyebrow text-[hsl(var(--background)/.55)]">Prendre rendez-vous</p><h2 className="jbf-serif mt-6 max-w-xl text-6xl leading-[.88] sm:text-8xl">Commencer par<br /><em className="text-[hsl(var(--accent))]">se parler.</em></h2><p className="mt-8 max-w-md text-base leading-7 text-[hsl(var(--background)/.62)]">Pour une première prise de contact confidentielle, écrivez ou laissez vos coordonnées. Casablanca et échanges à distance, sur rendez-vous.</p><div className="mt-10 flex flex-wrap gap-3"><a href="#contact" className="inline-flex items-center gap-3 border border-[hsl(var(--background)/.3)] px-5 py-4 text-xs font-bold uppercase tracking-[.11em] transition-colors hover:bg-[hsl(var(--background))] hover:text-[hsl(var(--foreground))]" data-testid="link-contact-phone"><MessageCircle className="h-4 w-4" /> Demander un échange</a><a href="https://wa.me/?text=Bonjour%20Ma%C3%AEtre%20Moumen%2C%20je%20souhaite%20un%20premier%20%C3%A9change." target="_blank" rel="noreferrer" className="inline-flex items-center gap-3 bg-[hsl(var(--accent))] px-5 py-4 text-xs font-bold uppercase tracking-[.11em] text-[hsl(var(--accent-foreground))]" data-testid="link-contact-whatsapp"><MessageCircle className="h-4 w-4" /> WhatsApp</a></div></div>
               <div className="border-t border-[hsl(var(--background)/.25)] pt-7"><p className="jbf-eyebrow text-[hsl(var(--background)/.55)]">Coordonnées</p><div className="mt-7 space-y-7"><a href="mailto:coordonnees-a-confirmer@example.com" className="group flex items-center justify-between border-b border-[hsl(var(--background)/.2)] pb-5 text-xl transition-colors hover:text-[hsl(var(--accent))]" data-testid="link-contact-email"><span>Email professionnel — à confirmer</span><Mail className="h-5 w-5 opacity-50" /></a><a href="#contact" className="flex items-start justify-between border-b border-[hsl(var(--background)/.2)] pb-5 text-sm leading-6 text-[hsl(var(--background)/.62)]" data-testid="link-contact-phone-placeholder"><span>Téléphone professionnel<br />Coordonnées sur demande</span><ChevronRight className="h-5 w-5 opacity-50" /></a><div className="flex items-start justify-between"><span className="text-sm leading-6 text-[hsl(var(--background)/.62)]">Barreau de Casablanca<br />Premier échange confidentiel</span><span className="h-2 w-2 rounded-full bg-[hsl(var(--accent))]" /></div></div></div>
             </div>
           </div>

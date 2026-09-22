@@ -110,7 +110,9 @@ button, a, input, textarea { -webkit-tap-highlight-color: transparent; }
 .jbf-grid-lines { background-image: linear-gradient(hsl(var(--border) / .42) 1px, transparent 1px); background-size: 100% 76px; }
 .jbf-paper-card { background: hsl(var(--card)); border: 1px solid hsl(var(--border)); box-shadow: var(--shadow); }
 .jbf-logo { height: auto; width: clamp(155px, 20vw, 222px); }
-.jbf-logo-small { height: auto; width: 170px; }
+.jbf-logo-reversed { max-height: 88px; object-fit: contain; object-position: left center; width: 170px; }
+.jbf-monogram { height: 104px; object-fit: contain; object-position: left center; width: 104px; }
+.jbf-footer-logo { height: 82px; object-fit: contain; object-position: left center; width: 160px; }
 .jbf-focus:focus-visible { outline: 2px solid hsl(var(--accent)); outline-offset: 4px; }
 @media (max-width: 640px) { .jbf-container { width: min(100% - 32px, 1240px); } }
 @media (prefers-reduced-motion: reduce) {
