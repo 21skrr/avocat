@@ -1,4 +1,5 @@
-import { type FormEvent, type ReactNode, useState } from 'react';
+import { type FormEvent, type ReactNode, useState, useEffect } from 'react';
+import ScrollExpandMedia from '@/components/ui/scroll-expansion-hero';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ErrorBoundary } from '@/components/error-boundary';
 import { Toaster } from '@/components/ui/toaster';
@@ -23,6 +24,9 @@ import headerLogoPath from '@assets/1_1790079767821.png';
 import monogramPath from '@assets/2_1790079767820.png';
 import reversedLogoPath from '@assets/3_1790079767820.png';
 import NotFound from '@/pages/not-found';
+import AvocatProfile from '@/pages/avocat-profile';
+import Team from '@/components/ui/team-01';
+import { StickyFooter } from '@/components/ui/sticky-footer';
 import { Route, Switch, Router as WouterRouter, useLocation } from 'wouter';
 
 const queryClient = new QueryClient();
@@ -56,14 +60,37 @@ const articles = [
   { tag: 'Stratégie', title: 'Un conseil utile commence par les bonnes questions' },
 ];
 
-function Logo({ light = false }: { light?: boolean }) {
+/** Inline SVG monogram — overlapping serif AM, no circle */
+function AMMonogram({ size = 120, light = true }: { size?: number; light?: boolean }) {
+  const white = '#FFFFFF';
+  const dark = '#1B2B5E';
+  const color = light ? white : dark;
   return (
-    <a href="#accueil" className="jbf-focus flex items-center" data-testid="link-logo">
-      <img
-        src={light ? reversedLogoPath : headerLogoPath}
-        alt="Anass Moumen — Avocat à la Cour"
-        className={`jbf-logo ${light ? 'jbf-logo-reversed opacity-95' : ''}`}
-      />
+    <svg width={size} height={size * 0.75} viewBox="0 0 120 90" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="AM Monogram">
+      <text x="64" y="70" fontFamily="Georgia, 'Times New Roman', serif" fontSize="76" fontWeight="400" fill={color} textAnchor="end">A</text>
+      <text x="56" y="70" fontFamily="Georgia, 'Times New Roman', serif" fontSize="76" fontWeight="400" fill={color} textAnchor="start">M</text>
+    </svg>
+  );
+}
+
+function Logo({ light = false }: { light?: boolean }) {
+  const textColor = light ? '#FFFFFF' : '#1B2B5E';
+  return (
+    <a href="#accueil" className="jbf-focus flex items-center gap-3" data-testid="link-logo">
+      {/* Compact emblem */}
+      <svg width="40" height="30" viewBox="0 0 120 90" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <text x="64" y="70" fontFamily="Georgia, 'Times New Roman', serif" fontSize="76" fontWeight="400" fill={textColor} textAnchor="end">A</text>
+        <text x="56" y="70" fontFamily="Georgia, 'Times New Roman', serif" fontSize="76" fontWeight="400" fill={textColor} textAnchor="start">M</text>
+      </svg>
+      {/* Wordmark */}
+      <div className="flex flex-col" style={{ gap: '2px' }}>
+        <span className="font-normal tracking-[.25em] text-[.9rem] leading-none" style={{ color: textColor, fontFamily: "Georgia, 'Times New Roman', serif" }}>
+          ANASS MOUMEN
+        </span>
+        <span className="text-[.5rem] font-medium uppercase tracking-[.35em] leading-none" style={{ color: light ? 'rgba(255,255,255,0.7)' : 'rgba(27,43,94,0.7)' }}>
+          Avocat à la Cour
+        </span>
+      </div>
     </a>
   );
 }
@@ -87,6 +114,17 @@ function Home() {
   const [callbackPhone, setCallbackPhone] = useState('');
   const [callbackMessage, setCallbackMessage] = useState('');
   const [cookiesVisible, setCookiesVisible] = useState(true);
+
+  useEffect(() => {
+    const savedScroll = sessionStorage.getItem("scrollPos_/");
+    if (savedScroll) {
+      // Small timeout to allow DOM to render and paint
+      setTimeout(() => {
+        window.scrollTo(0, parseInt(savedScroll, 10));
+        sessionStorage.removeItem("scrollPos_/");
+      }, 50);
+    }
+  }, []);
 
   const submitCallback = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -122,58 +160,71 @@ function Home() {
       </header>
 
       <main>
-        <section id="accueil" className="jbf-grid-lines relative border-b border-[hsl(var(--border))]">
-          <div className="jbf-container grid min-h-[690px] items-center gap-14 py-20 lg:grid-cols-[1.1fr_.9fr] lg:gap-20 lg:py-28">
-            <div>
-              <p className="jbf-eyebrow jbf-reveal" data-testid="text-hero-kicker">Casablanca · Maroc</p>
-              <h1 className="jbf-serif jbf-reveal jbf-delay-1 mt-7 max-w-3xl text-[clamp(3.7rem,8vw,7.5rem)] leading-[.83] tracking-[-.035em]">
-                Le droit,<br /><em className="text-[hsl(var(--primary))]">en mouvement.</em>
-              </h1>
-              <p className="jbf-reveal jbf-delay-2 mt-9 max-w-xl text-base leading-7 text-[hsl(var(--muted-foreground))] sm:text-lg">
-                Anass Moumen accompagne entreprises, employeurs et salariés en droit des affaires et en droit social.
-                <strong className="font-semibold text-[hsl(var(--foreground))]"> Une stratégie pratique, une défense mesurée.</strong>
-              </p>
-              <div className="jbf-reveal jbf-delay-3 mt-9 flex flex-wrap items-center gap-x-7 gap-y-4">
-                <a href="#contact" className="inline-flex items-center gap-3 bg-[hsl(var(--accent))] px-6 py-4 text-xs font-bold uppercase tracking-[.12em] text-[hsl(var(--accent-foreground))] transition-transform hover:-translate-y-0.5" data-testid="link-hero-contact">Demander un échange <ArrowUpRight className="h-4 w-4" /></a>
-                <a href="#cabinet" className="jbf-link-underline text-xs font-bold uppercase tracking-[.12em]" data-testid="link-hero-discover">Découvrir le cabinet <ArrowDownRight className="ml-1 inline h-4 w-4" /></a>
+        <section id="accueil">
+          <ScrollExpandMedia
+            mediaType="image"
+            mediaSrc="https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=1280&q=80"
+            bgImageSrc="/hero-bg.jpg"
+            title="Le droit en mouvement"
+            date="Casablanca · Maroc"
+            scrollToExpand="Faites défiler pour découvrir"
+            textBlend
+          >
+            <div id="hero-content" className="jbf-container grid gap-14 py-10 lg:grid-cols-[1.1fr_.9fr] lg:gap-20">
+              <div>
+                <p className="jbf-eyebrow" data-testid="text-hero-kicker">Casablanca · Maroc</p>
+                <h1 className="jbf-serif mt-7 max-w-3xl text-[clamp(3.7rem,8vw,7.5rem)] leading-[.83] tracking-[-.035em]">
+                  Le droit,<br /><em className="text-[hsl(var(--primary))]">en mouvement.</em>
+                </h1>
+                <p className="mt-9 max-w-xl text-base leading-7 text-[hsl(var(--muted-foreground))] sm:text-lg">
+                  Anass Moumen accompagne entreprises, employeurs et salariés en droit des affaires et en droit social.
+                  <strong className="font-semibold text-[hsl(var(--foreground))]"> Une stratégie pratique, une défense mesurée.</strong>
+                </p>
+                <div className="mt-9 flex flex-wrap items-center gap-x-7 gap-y-4">
+                  <a href="#contact" className="inline-flex items-center gap-3 bg-[hsl(var(--accent))] px-6 py-4 text-xs font-bold uppercase tracking-[.12em] text-[hsl(var(--accent-foreground))] transition-transform hover:-translate-y-0.5" data-testid="link-hero-contact">Demander un échange <ArrowUpRight className="h-4 w-4" /></a>
+                  <a href="#cabinet" className="jbf-link-underline text-xs font-bold uppercase tracking-[.12em]" data-testid="link-hero-discover">Découvrir le cabinet <ArrowDownRight className="ml-1 inline h-4 w-4" /></a>
+                </div>
+                <div className="mt-16 grid max-w-lg grid-cols-3 border-t border-[hsl(var(--border))] pt-5">
+                  <div><p className="jbf-serif text-3xl">6</p><p className="mt-1 text-[.63rem] uppercase tracking-[.1em] text-[hsl(var(--muted-foreground))]">Domaines d'intervention</p></div>
+                  <div><p className="jbf-serif text-3xl">3</p><p className="mt-1 text-[.63rem] uppercase tracking-[.1em] text-[hsl(var(--muted-foreground))]">Langues de travail</p></div>
+                  <div><p className="jbf-serif text-3xl">1</p><p className="mt-1 text-[.63rem] uppercase tracking-[.1em] text-[hsl(var(--muted-foreground))]">Interlocuteur</p></div>
+                </div>
               </div>
-              <div className="mt-16 grid max-w-lg grid-cols-3 border-t border-[hsl(var(--border))] pt-5">
-                <div><p className="jbf-serif text-3xl">6</p><p className="mt-1 text-[.63rem] uppercase tracking-[.1em] text-[hsl(var(--muted-foreground))]">Domaines d’intervention</p></div>
-                <div><p className="jbf-serif text-3xl">3</p><p className="mt-1 text-[.63rem] uppercase tracking-[.1em] text-[hsl(var(--muted-foreground))]">Langues de travail</p></div>
-                <div><p className="jbf-serif text-3xl">1</p><p className="mt-1 text-[.63rem] uppercase tracking-[.1em] text-[hsl(var(--muted-foreground))]">Interlocuteur</p></div>
+              <div className="jbf-paper-card relative ml-auto w-full max-w-[470px] p-7 sm:p-10">
+                <div className="absolute right-7 top-7 h-9 w-9 rounded-full border border-[hsl(var(--accent)/.35)] bg-[hsl(var(--accent)/.08)]" />
+                <div className="relative">
+                  <p className="jbf-eyebrow text-[hsl(var(--accent))]">Premier échange</p>
+                  <h2 className="jbf-serif mt-4 text-4xl leading-none">Poser le cadre.<br /><em>Avancer.</em></h2>
+                  <p className="mt-5 text-sm leading-6 text-[hsl(var(--muted-foreground))]">Laissez quelques éléments de contexte. Votre demande sera accueillie avec discrétion.</p>
+                  {callbackSent ? (
+                    <div className="mt-8 border border-[hsl(var(--primary)/.25)] bg-[hsl(var(--primary)/.06)] p-5" data-testid="status-callback-success">
+                      <Check className="h-6 w-6 text-[hsl(var(--primary))]" />
+                      <p className="mt-3 font-semibold">Votre demande est bien enregistrée.</p>
+                      <p className="mt-1 text-sm leading-5 text-[hsl(var(--muted-foreground))]">Anass Moumen reviendra vers vous pour convenir d'un premier échange.</p>
+                      <button type="button" onClick={() => setCallbackSent(false)} className="mt-4 text-xs font-bold uppercase tracking-[.1em] underline" data-testid="button-new-callback">Nouvelle demande</button>
+                    </div>
+                  ) : (
+                    <form className="mt-8 space-y-4" onSubmit={submitCallback}>
+                      <label className="block"><span className="sr-only">Nom</span><input value={callbackName} onChange={(event) => setCallbackName(event.target.value)} required placeholder="Votre nom" className="w-full border-b border-[hsl(var(--border))] bg-transparent px-0 py-3 text-sm outline-none placeholder:text-[hsl(var(--muted-foreground))] focus:border-[hsl(var(--primary))]" data-testid="input-callback-name" /></label>
+                      <label className="block"><span className="sr-only">Téléphone ou email</span><input value={callbackPhone} onChange={(event) => setCallbackPhone(event.target.value)} required placeholder="Téléphone ou email" className="w-full border-b border-[hsl(var(--border))] bg-transparent px-0 py-3 text-sm outline-none placeholder:text-[hsl(var(--muted-foreground))] focus:border-[hsl(var(--primary))]" data-testid="input-callback-contact" /></label>
+                      <label className="block"><span className="sr-only">Votre situation</span><textarea value={callbackMessage} onChange={(event) => setCallbackMessage(event.target.value)} required placeholder="En quelques mots, votre situation..." rows={2} className="w-full resize-none border-b border-[hsl(var(--border))] bg-transparent px-0 py-3 text-sm outline-none placeholder:text-[hsl(var(--muted-foreground))] focus:border-[hsl(var(--primary))]" data-testid="input-callback-message" /></label>
+                      <button type="submit" className="mt-3 flex w-full items-center justify-between bg-[hsl(var(--primary))] px-5 py-4 text-xs font-bold uppercase tracking-[.12em] text-[hsl(var(--primary-foreground))] transition-colors hover:bg-[hsl(var(--foreground))]" data-testid="button-submit-callback"><span>Demander un rappel</span><ArrowUpRight className="h-4 w-4" /></button>
+                      <p className="text-[.64rem] leading-4 text-[hsl(var(--muted-foreground))]">Les informations partagées sont destinées à ce premier échange et traitées avec confidentialité.</p>
+                    </form>
+                  )}
+                </div>
               </div>
             </div>
-            <div className="jbf-paper-card relative ml-auto w-full max-w-[470px] p-7 sm:p-10">
-              <div className="absolute right-7 top-7 h-9 w-9 rounded-full border border-[hsl(var(--accent)/.35)] bg-[hsl(var(--accent)/.08)]" />
-              <div className="relative">
-                <p className="jbf-eyebrow text-[hsl(var(--accent))]">Premier échange</p>
-                <h2 className="jbf-serif mt-4 text-4xl leading-none">Poser le cadre.<br /><em>Avancer.</em></h2>
-                <p className="mt-5 text-sm leading-6 text-[hsl(var(--muted-foreground))]">Laissez quelques éléments de contexte. Votre demande sera accueillie avec discrétion.</p>
-                {callbackSent ? (
-                  <div className="mt-8 border border-[hsl(var(--primary)/.25)] bg-[hsl(var(--primary)/.06)] p-5" data-testid="status-callback-success">
-                    <Check className="h-6 w-6 text-[hsl(var(--primary))]" />
-                    <p className="mt-3 font-semibold">Votre demande est bien enregistrée.</p>
-                    <p className="mt-1 text-sm leading-5 text-[hsl(var(--muted-foreground))]">Anass Moumen reviendra vers vous pour convenir d’un premier échange.</p>
-                    <button type="button" onClick={() => setCallbackSent(false)} className="mt-4 text-xs font-bold uppercase tracking-[.1em] underline" data-testid="button-new-callback">Nouvelle demande</button>
-                  </div>
-                ) : (
-                  <form className="mt-8 space-y-4" onSubmit={submitCallback}>
-                    <label className="block"><span className="sr-only">Nom</span><input value={callbackName} onChange={(event) => setCallbackName(event.target.value)} required placeholder="Votre nom" className="w-full border-b border-[hsl(var(--border))] bg-transparent px-0 py-3 text-sm outline-none placeholder:text-[hsl(var(--muted-foreground))] focus:border-[hsl(var(--primary))]" data-testid="input-callback-name" /></label>
-                    <label className="block"><span className="sr-only">Téléphone ou email</span><input value={callbackPhone} onChange={(event) => setCallbackPhone(event.target.value)} required placeholder="Téléphone ou email" className="w-full border-b border-[hsl(var(--border))] bg-transparent px-0 py-3 text-sm outline-none placeholder:text-[hsl(var(--muted-foreground))] focus:border-[hsl(var(--primary))]" data-testid="input-callback-contact" /></label>
-                    <label className="block"><span className="sr-only">Votre situation</span><textarea value={callbackMessage} onChange={(event) => setCallbackMessage(event.target.value)} required placeholder="En quelques mots, votre situation..." rows={2} className="w-full resize-none border-b border-[hsl(var(--border))] bg-transparent px-0 py-3 text-sm outline-none placeholder:text-[hsl(var(--muted-foreground))] focus:border-[hsl(var(--primary))]" data-testid="input-callback-message" /></label>
-                    <button type="submit" className="mt-3 flex w-full items-center justify-between bg-[hsl(var(--primary))] px-5 py-4 text-xs font-bold uppercase tracking-[.12em] text-[hsl(var(--primary-foreground))] transition-colors hover:bg-[hsl(var(--foreground))]" data-testid="button-submit-callback"><span>Demander un rappel</span><ArrowUpRight className="h-4 w-4" /></button>
-                    <p className="text-[.64rem] leading-4 text-[hsl(var(--muted-foreground))]">Les informations partagées sont destinées à ce premier échange et traitées avec confidentialité.</p>
-                  </form>
-                )}
-              </div>
-            </div>
-          </div>
-          <div className="pointer-events-none absolute bottom-6 right-7 hidden items-center gap-3 text-[.62rem] font-bold uppercase tracking-[.2em] text-[hsl(var(--muted-foreground))] lg:flex"><span className="h-px w-12 bg-[hsl(var(--border))]" /> Faites défiler</div>
+          </ScrollExpandMedia>
         </section>
 
         <section id="cabinet" className="jbf-container py-24 sm:py-32">
-          <SectionHeading kicker="Le cabinet" title={<>Une pratique engagée,<br /><em className="text-[hsl(var(--primary))]">à taille humaine.</em></>}>
-            <p className="mt-7 max-w-2xl text-base leading-7 text-[hsl(var(--muted-foreground))]">Anass Moumen est Avocat au Barreau de Casablanca. Sa pratique s’inscrit dans une approche concrète du droit des affaires et du droit social : comprendre la situation, mesurer les risques et construire une réponse qui puisse être mise en œuvre.</p>
+          <SectionHeading kicker="About Us" title={<>Moumen Avocats<br /><em className="text-[hsl(var(--primary))]">Cabinet d&rsquo;avocat.</em></>}>
+            <div className="mt-7 max-w-2xl space-y-5 text-base leading-7 text-[hsl(var(--muted-foreground))]">
+              <p>Founded in 2020, Moumen Avocats is a dynamic law firm based in Casablanca dedicated to providing high-quality legal services to businesses. With a team of skilled professionals, we work closely with our clients to address their legal needs and ensure effective solutions.</p>
+              <p>Our firm is committed to supporting businesses through various challenges, helping them navigate the complexities of the corporate world with confidence.</p>
+              <p>As a local market player, we maintain strong connections to small and medium-sized Moroccan enterprises and are deeply committed to assisting their business development.</p>
+            </div>
             <a href="#equipe" className="jbf-link-underline mt-7 inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[.12em]" data-testid="link-cabinet-journey">Voir le parcours <ChevronRight className="h-4 w-4" /></a>
           </SectionHeading>
           <div className="mt-24 grid border-y border-[hsl(var(--border))] sm:grid-cols-2 lg:grid-cols-4">
@@ -197,12 +248,17 @@ function Home() {
             <p className="mt-7 max-w-xl text-base leading-7 text-[hsl(var(--muted-foreground))]">Le parcours d’Anass Moumen s’est construit au sein de plusieurs environnements professionnels du droit, au contact de problématiques variées et de clients aux besoins concrets.</p>
           </SectionHeading>
           <div className="mt-20 grid gap-8 md:grid-cols-[.7fr_1.3fr]">
-            <div className="flex aspect-[1.05] items-end bg-[hsl(var(--primary))] p-7 text-[hsl(var(--primary-foreground))] sm:p-10"><div><p className="jbf-eyebrow text-[hsl(var(--accent))]">Profil</p><img src={monogramPath} alt="Monogramme AM" className="jbf-monogram mt-5" /><p className="mt-8 text-sm text-[hsl(var(--primary-foreground)/.7)]">Avocat au Barreau<br />de Casablanca</p></div></div>
+            <div className="flex aspect-[1.05] items-end bg-[hsl(var(--primary))] p-7 text-[hsl(var(--primary-foreground))] sm:p-10"><div><p className="jbf-eyebrow text-[hsl(var(--accent))]">Profil</p><div className="mt-5"><AMMonogram size={110} light /></div><p className="mt-8 text-sm text-[hsl(var(--primary-foreground)/.7)]">Avocat au Barreau<br />de Casablanca</p></div></div>
             <div className="border-t border-[hsl(var(--border))]">
               {[['BRAHMA AVOCATS', 'Expérience professionnelle'], ['BENZEKRI LAW FIRM', 'Expérience professionnelle'], ['Cabinet Maîtres BENAMMAR', 'Expérience professionnelle']].map(([firm, label], index) => <div key={firm} className="group flex items-center justify-between border-b border-[hsl(var(--border))] py-7"><div><p className="jbf-eyebrow text-[hsl(var(--accent))]">{label}</p><h3 className="jbf-serif mt-2 text-3xl sm:text-4xl">{firm}</h3></div><span className="font-mono text-xs text-[hsl(var(--muted-foreground))]">0{index + 1}</span></div>)}
             </div>
           </div>
           <div className="mt-16 flex flex-wrap items-center gap-5 border-t border-[hsl(var(--border))] pt-7"><Languages className="h-5 w-5 text-[hsl(var(--accent))]" /><span className="jbf-eyebrow">Langues de travail</span><span className="text-sm font-semibold">Français</span><span className="text-sm font-semibold">English</span><span className="text-sm font-semibold">العربية</span></div>
+        </section>
+
+        {/* Team / Profile card section */}
+        <section id="parcours-equipe" className="border-y border-[hsl(var(--border))] bg-[hsl(var(--card)/.4)]">
+          <Team />
         </section>
 
         <section id="articles" className="jbf-grid-lines border-y border-[hsl(var(--border))] py-24 sm:py-32">
@@ -215,20 +271,9 @@ function Home() {
             </div>
           </div>
         </section>
-
-        <section id="contact" className="bg-[hsl(var(--foreground))] py-24 text-[hsl(var(--background))] sm:py-32">
-          <div className="jbf-container">
-            <div className="grid gap-16 lg:grid-cols-[1.1fr_.9fr] lg:gap-24">
-              <div><img src={reversedLogoPath} alt="" aria-hidden="true" className="jbf-footer-logo mb-9" /><p className="jbf-eyebrow text-[hsl(var(--background)/.55)]">Prendre rendez-vous</p><h2 className="jbf-serif mt-6 max-w-xl text-6xl leading-[.88] sm:text-8xl">Commencer par<br /><em className="text-[hsl(var(--accent))]">se parler.</em></h2><p className="mt-8 max-w-md text-base leading-7 text-[hsl(var(--background)/.62)]">Pour une première prise de contact confidentielle, écrivez ou laissez vos coordonnées. Casablanca et échanges à distance, sur rendez-vous.</p><div className="mt-10 flex flex-wrap gap-3"><a href="#contact" className="inline-flex items-center gap-3 border border-[hsl(var(--background)/.3)] px-5 py-4 text-xs font-bold uppercase tracking-[.11em] transition-colors hover:bg-[hsl(var(--background))] hover:text-[hsl(var(--foreground))]" data-testid="link-contact-phone"><MessageCircle className="h-4 w-4" /> Demander un échange</a><a href="https://wa.me/?text=Bonjour%20Ma%C3%AEtre%20Moumen%2C%20je%20souhaite%20un%20premier%20%C3%A9change." target="_blank" rel="noreferrer" className="inline-flex items-center gap-3 bg-[hsl(var(--accent))] px-5 py-4 text-xs font-bold uppercase tracking-[.11em] text-[hsl(var(--accent-foreground))]" data-testid="link-contact-whatsapp"><MessageCircle className="h-4 w-4" /> WhatsApp</a></div></div>
-              <div className="border-t border-[hsl(var(--background)/.25)] pt-7"><p className="jbf-eyebrow text-[hsl(var(--background)/.55)]">Coordonnées</p><div className="mt-7 space-y-7"><a href="mailto:coordonnees-a-confirmer@example.com" className="group flex items-center justify-between border-b border-[hsl(var(--background)/.2)] pb-5 text-xl transition-colors hover:text-[hsl(var(--accent))]" data-testid="link-contact-email"><span>Email professionnel — à confirmer</span><Mail className="h-5 w-5 opacity-50" /></a><a href="#contact" className="flex items-start justify-between border-b border-[hsl(var(--background)/.2)] pb-5 text-sm leading-6 text-[hsl(var(--background)/.62)]" data-testid="link-contact-phone-placeholder"><span>Téléphone professionnel<br />Coordonnées sur demande</span><ChevronRight className="h-5 w-5 opacity-50" /></a><div className="flex items-start justify-between"><span className="text-sm leading-6 text-[hsl(var(--background)/.62)]">Barreau de Casablanca<br />Premier échange confidentiel</span><span className="h-2 w-2 rounded-full bg-[hsl(var(--accent))]" /></div></div></div>
-            </div>
-          </div>
-        </section>
       </main>
 
-      <footer className="bg-[hsl(var(--foreground))] px-4 pb-9 text-[hsl(var(--background))]">
-        <div className="jbf-container border-t border-[hsl(var(--background)/.2)] pt-7"><div className="flex flex-col items-start justify-between gap-7 sm:flex-row sm:items-center"><Logo light /><div className="flex flex-wrap gap-x-6 gap-y-3 text-[.62rem] font-semibold uppercase tracking-[.12em] text-[hsl(var(--background)/.55)]"><a href="#accueil" className="hover:text-[hsl(var(--background))]" data-testid="link-footer-home">Accueil</a><a href="#contact" className="hover:text-[hsl(var(--background))]" data-testid="link-footer-legal">Mentions légales</a><a href="#contact" className="hover:text-[hsl(var(--background))]" data-testid="link-footer-privacy">Confidentialité</a><a href="https://www.linkedin.com/in/moumen-a" target="_blank" rel="noreferrer" className="hover:text-[hsl(var(--background))]" data-testid="link-footer-linkedin">LinkedIn</a></div></div><p className="mt-9 text-[.62rem] text-[hsl(var(--background)/.4)]">© {new Date().getFullYear()} Anass Moumen · Avocat au Barreau de Casablanca</p></div>
-      </footer>
+      <StickyFooter />
 
       {cookiesVisible && <aside className="fixed bottom-4 left-4 z-30 max-w-[360px] border border-[hsl(var(--border))] bg-[hsl(var(--card))] p-5 shadow-xl sm:bottom-6 sm:left-6" data-testid="panel-cookie-consent"><div className="flex items-start justify-between gap-5"><div><p className="text-sm font-semibold">Votre confidentialité compte.</p><p className="mt-2 text-xs leading-5 text-[hsl(var(--muted-foreground))]">Nous utilisons uniquement les cookies nécessaires au bon fonctionnement du site.</p></div><button type="button" onClick={() => setCookiesVisible(false)} aria-label="Fermer le bandeau cookies" className="shrink-0 text-[hsl(var(--muted-foreground))] hover:text-[hsl(var(--foreground))]" data-testid="button-dismiss-cookies"><X className="h-4 w-4" /></button></div><button type="button" onClick={() => setCookiesVisible(false)} className="mt-4 text-[.65rem] font-bold uppercase tracking-[.12em] underline underline-offset-4" data-testid="button-accept-cookies">J’ai compris</button></aside>}
     </div>
@@ -236,7 +281,7 @@ function Home() {
 }
 
 function Router() {
-  return <RoutedErrorBoundary><Switch><Route path="/" component={Home} /><Route component={NotFound} /></Switch></RoutedErrorBoundary>;
+  return <RoutedErrorBoundary><Switch><Route path="/" component={Home} /><Route path="/avocat/:slug" component={AvocatProfile} /><Route component={NotFound} /></Switch></RoutedErrorBoundary>;
 }
 
 function RoutedErrorBoundary({ children }: { children: ReactNode }) {
